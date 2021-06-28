@@ -5,19 +5,25 @@ const years = document.querySelector("#years");
 const country = document.querySelector("#country");
 const works = document.querySelector("#works");
 const link = document.querySelector("a");
-let composerName;
-let url = `http://localhost:5000/composers?name=${composerName}`;
+
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const composerName = urlParams.get('name');
+
+//let composerName = 'Bach';
+// let url = `http://localhost:5000/composers?name=${composerName}`;
 
 // const options = {
 //   method: "GET",
 //   body: JSON.stringify(composerName),
 // };
 
-function fetchData() {
-  fetch(url, options)
+function fetchData(composerName) {
+  let url = `http://localhost:5000/composers?name=${composerName}`;
+  fetch(url)
     .then((response) => response.json())
     .then((data) => addDataToDOM(data))
-    .catch((err) => console.warn("Oops, something went wrong!"), err);
+    .catch((err) => console.warn("Oops, something went wrong!"));
   console.log("Waiting for composer data...");
 }
 
@@ -30,7 +36,13 @@ function addDataToDOM(composerObj) {
   link.href = composerObj.url;
 }
 
-form.addEventListener("submit", (e) => {
-  let input = e.target.name.value;
-  composerName = input[0].toUpperCase() + input.toLowerCase().substring(1);
-});
+if(composerName) {
+  fetchData(composerName);
+}
+
+if(form) {
+  form.addEventListener("submit", (e) => {
+    let input = e.target.name.value;
+    let composerName = input[0].toUpperCase() + input.toLowerCase().substring(1);
+  });
+}

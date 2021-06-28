@@ -6,16 +6,27 @@ const composersArr = require("./composer-data");
 
 // INSTRUCTING THE SERVER ON HOW TO LISTEN - creating a Request Handler function:
 function requestHandler(request, response) {
+  let body;
   response.setHeader("Access-Control-Allow-Origin", "*");
+
   if (request.url) {
+
+    var regex = /[?&]([^=#]+)=([^&#]*)/g,
+    url = request.url,
+    params = {},
+    match;
+    while(match = regex.exec(url)) {
+        params[match[1]] = match[2];
+    }
+
     response.writeHead(200);
     for (const composer of composersArr) {
-      if (composer["name"] === request.url.slice(1)) {
-        let body = composer;
+      if (composer.name.toLowerCase() === params.name) {
+        body = composer;
       }
     }
   }
-  response.send(body);
+  response.end(`${JSON.stringify(body)}`);
   // For BROWSER - we need to use "JSON.stringify() on body
 }
 
